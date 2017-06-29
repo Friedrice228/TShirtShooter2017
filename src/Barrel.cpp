@@ -6,17 +6,16 @@
  */
 //position
 #include "Barrel.h"
-#include <WPILIb.h>
+#include <WPILib.h>
 #define PI 3.14159
 
 const int zero_state = 0;
 const int down_state = 1;
 const int sixty_state = 2;
 const int eighty_state = 3;
-int barrel_pos_state = zero_state;
+int barrel_pos_state = zero_state; //init state
 
 double position = 0.0;
-double ref = 0.0;
 double output = 0.0;
 
 double Kp = 0.0;
@@ -39,11 +38,23 @@ Barrel::Barrel() {
 
 }
 
-void Barrel::MoveTo(double radians) {
-
-	ref = radians;
+void Barrel::MoveTo(double ref) { //ref must be in radians from the starting position, the horizontal is NOT 0 Rad
 
 	position = canTalonBarrel->GetEncPosition() * (2 * PI / 4096);
+
+	if (ref <= position){
+
+		Kp = 1.0; //not real values
+		Ki = 1.0;
+		Kd = 1.0;
+
+	} else {
+
+		Kp = 0.0;
+		Ki = 0.0;
+		Kd = 0.0;
+
+	}
 
 	error = ref - position;
 

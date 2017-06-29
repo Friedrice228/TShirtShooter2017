@@ -8,6 +8,7 @@
 #include <Barrel.h>
 #include <Tank.h>
 #include <Firing.h>
+#include <DriveController.h>
 #include <TeleopStateMachine.h>
 
 #define PI 3.14159
@@ -23,6 +24,7 @@ class Robot: public frc::IterativeRobot {
 	Tank *tank_;
 	Barrel *barrel_;
 	TeleopStateMachine *teleop_state_machine;
+	DriveController *drive_controller;
 
 	void RobotInit() {
 
@@ -30,6 +32,7 @@ class Robot: public frc::IterativeRobot {
 		tank_ = new Tank();
 		barrel_ = new Barrel();
 		firing_ = new Firing();
+		drive_controller = new DriveController();
 		teleop_state_machine = new TeleopStateMachine(barrel_, tank_, firing_);
 
 	}
@@ -50,6 +53,8 @@ class Robot: public frc::IterativeRobot {
 		teleop_state_machine->StateMachine(shoot_button, sixty_deg, eighty_deg);
 		tank_->TankStateMachine();
 		barrel_->BarrelStateMachine();
+		drive_controller->Drive();
+
 
 	}
 

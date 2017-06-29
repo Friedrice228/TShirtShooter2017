@@ -15,9 +15,11 @@ public:
 	CANTalon *canTalonBarrel;
 
 	Barrel();
-	void MoveTo(double radians);
+	void MoveTo(double ref);
 	void BarrelStateMachine();
 	bool IsAtPosition();
+
+	double previous_ref = 0;
 
 	const int zero_state_h = 0;
 	const int down_state_h = 1;

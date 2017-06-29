@@ -24,6 +24,8 @@ Barrel * barrel_;
 Tank * tank_;
 Firing * firing_;
 
+Timer *firingTimer = new Timer();
+
 TeleopStateMachine::TeleopStateMachine(Barrel *barrelP, Tank *tankP, Firing *firingP) {
 
 	barrel_ = barrelP;
@@ -32,13 +34,11 @@ TeleopStateMachine::TeleopStateMachine(Barrel *barrelP, Tank *tankP, Firing *fir
 
 }
 
-void TeleopStateMachine::StateMachine(bool shoot, bool sixty, bool eighty) {
+void TeleopStateMachine::StateMachine(bool shoot_button, bool sixty, bool eighty) {
 
 	switch(state) {
 
 	case wait_for_button_state:
-		sixty_ = false;
-		eighty_ = false;
 		barrel_->barrel_pos_state = barrel_->down_state_h;
 		tank_->tank_state = tank_->close_state_h;
 		firing_->barrel_fire_state = firing_->close_state_h;
@@ -57,31 +57,36 @@ void TeleopStateMachine::StateMachine(bool shoot, bool sixty, bool eighty) {
 		if(tank_->pressureSensor->GetValue() > threshold) {
 			if(sixty_) {
 				state = sixty_state;
+				sixty_ = false;
 			}
 			else if (eighty_) {
 				state = eighty_state;
+				eighty_ = false;
 			}
 		}
 		break;
 
 	case sixty_state:
 		barrel_->barrel_pos_state = barrel_->sixty_state_h;
-		if(shoot && barrel_->IsAtPosition()) {
+		if(shoot_button && barrel_->IsAtPosition()) {
 			state = output_valve_state;
 		}
 		break;
 
 	case eighty_state:
 		barrel_->barrel_pos_state = barrel_->eighty_state_h;
-		if(shoot && barrel_->IsAtPosition()) {
+		if(shoot_button && barrel_->IsAtPosition()) {
 			state = output_valve_state;
 		}
 		break;
 
 	case output_valve_state:
 		firing_->barrel_fire_state = firing_->fire_state_h;
-
+		firingTimer->Reset();
+		firingTimer->Start();
+		if(firingTimer->HasPeriodPassed(1)) {
 		state = wait_for_button_state;
+		}
 		break;
 
 	}
